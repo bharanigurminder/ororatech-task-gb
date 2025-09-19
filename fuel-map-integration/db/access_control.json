@@ -1,0 +1,15 @@
+{
+  "tenant_datasets": {
+    "tenant_001": {
+      "private_datasets": [],
+      "shared_datasets": [],
+      "global_access": true
+    },
+    "tenant_002": {
+      "private_datasets": [],
+      "shared_datasets": [],
+      "global_access": true
+    }
+  },
+  "dataset_permissions": {}
+}

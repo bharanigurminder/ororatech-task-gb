@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Leaflet CSS */
+@import 'leaflet/dist/leaflet.css';
+
+/* Custom styles for fuel map application */
+.fuel-upload-zone {
+  @apply border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors;
+}
+
+.fuel-upload-zone.dragover {
+  @apply border-blue-500 bg-blue-50;
+}
+
+.fuel-processing {
+  @apply animate-pulse;
+}
+
+.fuel-card {
+  @apply bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow;
+}
+
+.fuel-badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.fuel-badge-grass {
+  @apply bg-green-100 text-green-800;
+}
+
+.fuel-badge-shrub {
+  @apply bg-orange-100 text-orange-800;
+}
+
+.fuel-badge-timber {
+  @apply bg-emerald-100 text-emerald-800;
+}
+
+.fuel-badge-urban {
+  @apply bg-gray-100 text-gray-800;
+}
+
+.fuel-badge-water {
+  @apply bg-blue-100 text-blue-800;
+}
+
+/* Leaflet map styles */
+.leaflet-container {
+  @apply rounded-lg;
+}
+
+/* Custom popup styles */
+.fuel-popup {
+  @apply text-sm;
+}
+
+.fuel-popup h3 {
+  @apply font-semibold text-gray-900 mb-2;
+}
+
+.fuel-popup p {
+  @apply text-gray-600 mb-1;
+}

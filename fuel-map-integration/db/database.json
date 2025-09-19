@@ -1,0 +1,31 @@
+{
+  "tenants": {
+    "tenant_001": {
+      "id": "tenant_001",
+      "name": "California Forest Service",
+      "email": "admin@calfire.ca.gov",
+      "created_at": "2024-01-15T10:00:00Z"
+    },
+    "tenant_002": {
+      "id": "tenant_002",
+      "name": "Oregon Department of Forestry",
+      "email": "gis@oregon.gov",
+      "created_at": "2024-02-01T09:30:00Z"
+    }
+  },
+  "datasets": {},
+  "class_mappings": {},
+  "spatial_coverage": {},
+  "system_config": {
+    "canonical_system": "FBFM40",
+    "default_resolution": 30,
+    "supported_formats": [
+      "GeoTIFF",
+      "COG",
+      "ZIP"
+    ],
+    "max_file_size_mb": 2048,
+    "processing_timeout_seconds": 1800,
+    "standard_projection": "EPSG:3857"
+  }
+}
