@@ -1,0 +1,167 @@
+Bug 001: Deleting all datasets not updating UI 
+
+When I click on delete all dataset there are three api calls happening 
+
+curl 'http://localhost:3000/api/datasets/delete-all?tenant_id=tenant_001' \
+  -X 'DELETE' \
+  -H 'Accept: */*' \
+  -H 'Accept-Language: en-US,en;q=0.9' \
+  -H 'Cache-Control: no-cache' \
+  -H 'Connection: keep-alive' \
+  -b '__next_hmr_refresh_hash__=317' \
+  -H 'DNT: 1' \
+  -H 'Origin: http://localhost:3000' \
+  -H 'Pragma: no-cache' \
+  -H 'Referer: http://localhost:3000/' \
+  -H 'Sec-Fetch-Dest: empty' \
+  -H 'Sec-Fetch-Mode: cors' \
+  -H 'Sec-Fetch-Site: same-origin' \
+  -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36' \
+  -H 'sec-ch-ua: "Not=A?Brand";v="24", "Chromium";v="140"' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'sec-ch-ua-platform: "macOS"'
+
+curl response 
+{
+    "success": true,
+    "message": "Successfully deleted 2 datasets (56.96MB)",
+    "deleted_count": 2,
+    "deleted_size_mb": 56.96
+}
+
+
+curl 'http://localhost:3000/api/datasets?tenant_id=tenant_001' \
+  -H 'Accept: */*' \
+  -H 'Accept-Language: en-US,en;q=0.9' \
+  -H 'Cache-Control: no-cache' \
+  -H 'Connection: keep-alive' \
+  -b '__next_hmr_refresh_hash__=317' \
+  -H 'DNT: 1' \
+  -H 'Pragma: no-cache' \
+  -H 'Referer: http://localhost:3000/' \
+  -H 'Sec-Fetch-Dest: empty' \
+  -H 'Sec-Fetch-Mode: cors' \
+  -H 'Sec-Fetch-Site: same-origin' \
+  -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36' \
+  -H 'sec-ch-ua: "Not=A?Brand";v="24", "Chromium";v="140"' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'sec-ch-ua-platform: "macOS"'
+
+curl response 
+{
+    "success": true,
+    "tenant_id": "tenant_001",
+    "datasets": {
+        "owned": [
+            {
+                "id": "dataset_01ed0365",
+                "name": "dataset_01ed0365",
+                "type": "customer_private",
+                "classification_system": "auto-detected",
+                "resolution_meters": 30,
+                "status": "processed",
+                "priority": 1,
+                "pixel_count": 3795845,
+                "created_at": "2025-09-19T17:31:38.320Z",
+                "processing": {
+                    "validation_status": "valid",
+                    "cog_created": true,
+                    "size_reduction": "14.48MB",
+                    "processing_time_seconds": 0
+                }
+            },
+            {
+                "id": "._dataset_01ed0365",
+                "name": "._dataset_01ed0365",
+                "type": "customer_private",
+                "classification_system": "auto-detected",
+                "resolution_meters": 30,
+                "status": "processed",
+                "priority": 1,
+                "pixel_count": 0,
+                "created_at": "2025-09-19T17:31:38.280Z",
+                "processing": {
+                    "validation_status": "valid",
+                    "cog_created": true,
+                    "size_reduction": "0MB",
+                    "processing_time_seconds": 0
+                }
+            },
+            {
+                "id": "dataset_c6f47cf7",
+                "name": "dataset_c6f47cf7",
+                "type": "customer_private",
+                "classification_system": "auto-detected",
+                "resolution_meters": 30,
+                "status": "processed",
+                "priority": 1,
+                "pixel_count": 11135877,
+                "created_at": "2025-09-19T17:44:53.120Z",
+                "processing": {
+                    "validation_status": "valid",
+                    "cog_created": true,
+                    "size_reduction": "42.48MB",
+                    "processing_time_seconds": 0
+                }
+            },
+            {
+                "id": "._dataset_c6f47cf7",
+                "name": "._dataset_c6f47cf7",
+                "type": "customer_private",
+                "classification_system": "auto-detected",
+                "resolution_meters": 30,
+                "status": "processed",
+                "priority": 1,
+                "pixel_count": 0,
+                "created_at": "2025-09-19T17:44:53.010Z",
+                "processing": {
+                    "validation_status": "valid",
+                    "cog_created": true,
+                    "size_reduction": "0MB",
+                    "processing_time_seconds": 0
+                }
+            }
+        ],
+        "shared": [],
+        "global": []
+    }
+}
+
+  curl 'http://localhost:3000/api/tenants/tenant_001/stats' \
+  -H 'Accept: */*' \
+  -H 'Accept-Language: en-US,en;q=0.9' \
+  -H 'Cache-Control: no-cache' \
+  -H 'Connection: keep-alive' \
+  -b '__next_hmr_refresh_hash__=317' \
+  -H 'DNT: 1' \
+  -H 'Pragma: no-cache' \
+  -H 'Referer: http://localhost:3000/' \
+  -H 'Sec-Fetch-Dest: empty' \
+  -H 'Sec-Fetch-Mode: cors' \
+  -H 'Sec-Fetch-Site: same-origin' \
+  -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36' \
+  -H 'sec-ch-ua: "Not=A?Brand";v="24", "Chromium";v="140"' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'sec-ch-ua-platform: "macOS"'
+
+curl response 
+{
+    "success": true,
+    "statistics": {
+        "total_datasets": 2,
+        "private_datasets": 2,
+        "total_storage_mb": 56.96,
+        "coverage_area_km2": 2000,
+        "last_upload": 1758303893.12
+    }
+}
+
+
+Since we have deleted all datasets why the thrid API call stats returns wrong infromation. 
+
+Lets make sure when we click the Delete all Dataset we perform following steps to make sure 
+1. Delete all tiff files in storage 
+2. Delete all reference of the dataset in database which stored locally in json 
+3. Since we are deleting information from database the stats should return 0 for all since there is not dataset left after deleting 
+
+PFA screenshot '/Users/gurmindersingh/Desktop/Screenshot 2025-09-19 at 11.23.42 PM.png' after clicking Delete all dataset the UI is still showing dataset with wrong stats 

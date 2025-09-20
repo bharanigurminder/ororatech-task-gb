@@ -1,0 +1,143 @@
+{
+  "metadata": {
+    "name": "ESRI_PFA_to_FBFM40_Mapping",
+    "version": "2.0",
+    "description": "Enhanced 1:1 mapping with confidence scores and validation",
+    "creation_date": "2025-09-20T08:29:31.496174",
+    "author": "Fire_Behavior_Team",
+    "source_dataset": "ESRI_PFA_Classes",
+    "target_dataset": "LANDFIRE_FBFM40",
+    "mapping_approach": "Conservative 1:1 mapping prioritizing fire safety"
+  },
+  "validation_info": {
+    "validation_date": "2025-09-20T08:29:31.496191",
+    "validation_passed": true,
+    "validation_results": {
+      "completeness": {
+        "passed": true,
+        "result": "All expected source classes are mapped"
+      },
+      "target_validity": {
+        "passed": true,
+        "result": "All target classes are valid FBFM40 codes"
+      },
+      "semantic_logic": {
+        "passed": true,
+        "result": "All mappings follow semantic logic"
+      },
+      "confidence_analysis": {
+        "passed": true,
+        "result": {
+          "high_confidence_count": 4,
+          "medium_confidence_count": 3,
+          "low_confidence_count": 2,
+          "average_confidence": 0.7166666666666667,
+          "total_mappings": 9
+        }
+      }
+    }
+  },
+  "mappings": [
+    {
+      "source_class": 1,
+      "target_class": 98,
+      "confidence": 0.95,
+      "rationale": "Perfect semantic match: Water -> Open Water"
+    },
+    {
+      "source_class": 2,
+      "target_class": 183,
+      "confidence": 0.55,
+      "rationale": "Conservative choice: Trees -> Moderate conifer litter (high uncertainty)"
+    },
+    {
+      "source_class": 4,
+      "target_class": 121,
+      "confidence": 0.6,
+      "rationale": "Reasonable match: Flooded vegetation -> Grass-shrub mix"
+    },
+    {
+      "source_class": 5,
+      "target_class": 102,
+      "confidence": 0.75,
+      "rationale": "Good match: Crops behave like low load grass fuels"
+    },
+    {
+      "source_class": 7,
+      "target_class": 91,
+      "confidence": 0.9,
+      "rationale": "Direct match: Built Area -> Urban/Developed"
+    },
+    {
+      "source_class": 8,
+      "target_class": 99,
+      "confidence": 0.85,
+      "rationale": "Good match: Bare ground -> Barren"
+    },
+    {
+      "source_class": 9,
+      "target_class": 92,
+      "confidence": 0.95,
+      "rationale": "Perfect match: Snow/Ice -> Snow/Ice"
+    },
+    {
+      "source_class": 10,
+      "target_class": 183,
+      "confidence": 0.2,
+      "rationale": "Very uncertain: Clouds -> Default forest assumption"
+    },
+    {
+      "source_class": 11,
+      "target_class": 102,
+      "confidence": 0.7,
+      "rationale": "Good match: Rangeland -> Low load grass"
+    }
+  ],
+  "fbfm40_descriptions": {
+    "91": "NB1 - Urban/Developed",
+    "92": "NB2 - Snow/Ice",
+    "98": "NB8 - Open Water",
+    "99": "NB9 - Barren",
+    "102": "GR2 - Low load, dry climate grass",
+    "121": "GS1 - Low load, dry climate grass-shrub",
+    "183": "TL3 - Moderate load conifer litter",
+    "-9999": "NoData"
+  },
+  "expected_source_classes": [
+    1,
+    2,
+    4,
+    5,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "valid_fbfm40_classes": [
+    91,
+    92,
+    98,
+    99,
+    102,
+    121,
+    183,
+    186,
+    161,
+    162,
+    163,
+    164,
+    165,
+    181,
+    182,
+    184,
+    185,
+    187,
+    188,
+    189,
+    201,
+    202,
+    203,
+    204
+  ]
+}
