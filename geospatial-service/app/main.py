@@ -14,7 +14,7 @@ from app.services.gdal_processor import GDALProcessor
 from app.services.class_mapper import ClassReconciler
 import sys
 sys.path.append('..')
-from class_reconciliation_v1 import FuelModelReconciliation
+from class_reconciliation_enhanced import AlignedFuelModelReconciliation
 from app.models.dataset import (
     ProcessingRequest,
     ProcessingResult,
@@ -45,7 +45,7 @@ app.add_middleware(
 # Initialize services
 gdal_processor = GDALProcessor()
 class_reconciler = ClassReconciler()
-fbfm40_reconciler = FuelModelReconciliation()
+fbfm40_reconciler = AlignedFuelModelReconciliation()
 
 # Ensure storage directories exist
 STORAGE_BASE = Path("../storage")
@@ -196,12 +196,15 @@ async def process_fuel_map(
                     temp_files.append(reconciled_path)
 
                 try:
-                    # Process with FuelModelReconciliation
-                    fbfm40_reconciler.process_reconciliation(
-                        str(temp_path),
-                        str(reconciled_path),
-                        run_validation=False,  # Skip validation for faster processing
-                        keep_original_projection=True  # Keep original projection
+                    # Process with AlignedFuelModelReconciliation using enhanced method
+                    # Set reference LANDFIRE path for grid alignment
+                    reference_landfire_path = "/Users/gurmindersingh/Downloads/LF2024_FBFM40_250_CONUS/Tif/LC24_F40_250_AOI_V2.tif"
+
+                    fbfm40_reconciler.process_with_alignment(
+                        input_esri_path=str(temp_path),
+                        output_fbfm40_path=str(reconciled_path),
+                        reference_landfire_path=reference_landfire_path,
+                        maintain_resolution=True  # Keep input resolution (10m for Sentinel)
                     )
                     success = reconciled_path.exists()
 

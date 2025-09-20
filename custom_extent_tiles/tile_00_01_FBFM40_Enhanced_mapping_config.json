@@ -3,14 +3,14 @@
     "name": "ESRI_PFA_to_FBFM40_Mapping",
     "version": "2.0",
     "description": "Enhanced 1:1 mapping with confidence scores and validation",
-    "creation_date": "2025-09-20T08:29:31.496174",
+    "creation_date": "2025-09-21T04:55:16.036512",
     "author": "Fire_Behavior_Team",
     "source_dataset": "ESRI_PFA_Classes",
     "target_dataset": "LANDFIRE_FBFM40",
     "mapping_approach": "Conservative 1:1 mapping prioritizing fire safety"
   },
   "validation_info": {
-    "validation_date": "2025-09-20T08:29:31.496191",
+    "validation_date": "2025-09-21T04:55:16.036521",
     "validation_passed": true,
     "validation_results": {
       "completeness": {

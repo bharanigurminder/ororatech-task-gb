@@ -165,3 +165,50 @@ Lets make sure when we click the Delete all Dataset we perform following steps t
 3. Since we are deleting information from database the stats should return 0 for all since there is not dataset left after deleting 
 
 PFA screenshot '/Users/gurmindersingh/Desktop/Screenshot 2025-09-19 at 11.23.42 PM.png' after clicking Delete all dataset the UI is still showing dataset with wrong stats 
+
+----------------------------------------------------------------------------------------------------------------------
+
+Enhancement 001: Alteration in generating the output tif file 
+Lets take this tif file as reference and extract geosptail infromation like spatial reference pixel size etc from 
+"/Users/gurmindersingh/Downloads/LF2024_FBFM40_250_CONUS/Tif/LC24_F40_250_AOI_V2.tif"
+The extracted geospatial information is now the standard with exception of spatial resolution this tif file is 30 meter in spatial resolution 
+Now when we take our input 
+"/Volumes/SSD1/Projects/ororatech-task/custom_extent_tiles/tile_00_01.tiff"
+We want to use geospatial information extracted to be implemented on this input, so we want the same spatial resolution and pixel matching as reference tif file, 
+However there is an exception here we don't want to downsample this input to 30 meter spatial resolution. The input is sentinel driven data so we want to maintain the intput spatial resolution. 
+once we implement these conditions then we can go ahead with our class reconsiliation logic and save the output 
+"/Volumes/SSD1/Projects/ororatech-task/custom_extent_tiles/tile_00_01_FBFM40_Enhanced.tiff"
+
+In conclusion when I overlay 
+"/Users/gurmindersingh/Downloads/LF2024_FBFM40_250_CONUS/Tif/LC24_F40_250_AOI_V2.tif"
+with 
+"/Volumes/SSD1/Projects/ororatech-task/custom_extent_tiles/tile_00_01_FBFM40_Enhanced.tiff"
+in QGIS I should see them perfectly overlay each other with pixel matching with exception of different spatial resolutions 
+
+----------------------------------------------------------------------------------------------------------------------
+Enhancement 002: Create UI optoin to create simulation products where the simulation dataset would be combination of regional + global dataset
+
+The global dataset will be dataset downloaded from https://landfire.gov/ 40 Scott and Burgan Fire Behavior Fuel Models - FBFM40 for the year 2024
+
+The regional dataset will be dataaset downloaded from ESRI sentinel 2A LULC, this wiould be reprojected as dicussed in Enhancement 001 
+
+The key process here is to merge global and regional dataset into single raster, while combining into single raster since both of them have different spatial resolution we want to be 100 % creatin that the pixel matches between these two dataset 
+
+Once the merged dataset is created we store it storage folder. 
+
+for every merged dataset created we would also want the local database to maintain information on these merged dataset. 
+
+----------------------------------------------------------------------------------------------------------------------
+Enhancement 003: Alter upload process 
+1. When the user/customer is uploading a global geotiff file we will not implement class reconciliation on these geotiff files 
+2. When the user/customer is uploading a regional file only then we will implement class reconcilation on these geotiff files and then save them in storage.
+3. Identify which python code is being used for class reconcilation in fastapi code and replace to use /Volumes/SSD1/Projects/ororatech-task/class_reconciliation_enhance.py
+    3.1 class_reconciliation_enhance.py takes in classfied lulc sentinel imagery from ESRI as geotiff, then implement class reconcilation using FBFM40 as base
+4. In Front-End the Upload tab there is drop down to select Classification System, remove the first option Auto-detect, keep FBFM40 (Anderson Fire Behavior) as default and text TODO in front of Sentinel Fuel 2024, LANDFIRE US, Canadian FBP. We are adding TODO as gesture to user/customer that we have not implement the code for class reconcilation for these three classfication system.
+NOTE: class_reconciliation_enhance.py only works for FBFM40 (Anderson Fire Behaviour) and we want the fastapi to do the same we are not implementing  Sentinel Fuel 2024, LANDFIRE US, Canadian FBP for now.
+    4.1 In conclusion lets save the uploaded geotiff file in storage/orignal  and save the class_reconciliation_enhance.py output as cog in storage/processed directory
+5. Lets make sure in the database json we assign global and regional to each geotiff file uploaded.
+6. In Front-End when we are in Dataset tab there are three subtabs Owned Dataset, Shared Dataset and Global Dataset. Lets change this to only two subtabs with Owned/Regional Dataset and Global dataset
+
+Bug 003: reconciliation output does not use the same process defined in /Volumes/SSD1/Projects/ororatech-task/class_reconciliation_enhance.py
+In class_reconciliation_enhance.py script we are making sure 

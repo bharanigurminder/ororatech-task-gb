@@ -169,6 +169,110 @@
         "processing_time_seconds": 0.12
       },
       "created_at": "2025-09-20T22:19:19.010Z"
+    },
+    "dataset_a9b62989": {
+      "id": "dataset_a9b62989",
+      "tenant_id": "system",
+      "type": "global_baseline",
+      "name": "Global Baseline dataset_a9b62989",
+      "classification_system": "FBFM40",
+      "resolution_meters": 30,
+      "original_file": "../storage/tenant_001/original/dataset_a9b62989_original.tif",
+      "normalized_cog": "../storage/tenant_001/processed/dataset_a9b62989.cog.tif",
+      "bbox": [
+        -2136975,
+        1841265,
+        -2038245,
+        1918095
+      ],
+      "pixel_count": 8428251,
+      "status": "processed",
+      "priority": 0,
+      "processing": {
+        "validation_status": "passed",
+        "cog_created": true,
+        "size_reduction": "-34.5%",
+        "processing_time_seconds": 0.9
+      },
+      "created_at": "2025-09-20T22:56:47.645Z"
+    },
+    "dataset_b9330eb9": {
+      "id": "dataset_b9330eb9",
+      "tenant_id": "tenant_001",
+      "type": "customer_private",
+      "name": "Regional Dataset dataset_b9330eb9",
+      "classification_system": "FBFM40",
+      "resolution_meters": 10.000926430517737,
+      "original_file": "../storage/tenant_001/original/dataset_b9330eb9_original.tif",
+      "normalized_cog": "../storage/tenant_001/processed/dataset_b9330eb9.cog.tif",
+      "bbox": [
+        -13409257.859400544,
+        4499128.8,
+        -13330250.540599454,
+        4535832.2
+      ],
+      "pixel_count": 28993000,
+      "status": "processed",
+      "priority": 1,
+      "processing": {
+        "validation_status": "passed_with_warnings",
+        "cog_created": true,
+        "size_reduction": "-32.1%",
+        "processing_time_seconds": 1.71
+      },
+      "created_at": "2025-09-20T22:58:43.182Z"
+    },
+    "dataset_4fdce568": {
+      "id": "dataset_4fdce568",
+      "tenant_id": "system",
+      "type": "global_baseline",
+      "name": "Global Baseline dataset_4fdce568",
+      "classification_system": "FBFM40",
+      "resolution_meters": 30,
+      "original_file": "../storage/tenant_001/original/dataset_4fdce568_original.tif",
+      "normalized_cog": "../storage/tenant_001/processed/dataset_4fdce568.cog.tif",
+      "bbox": [
+        -2136975,
+        1841265,
+        -2038245,
+        1918095
+      ],
+      "pixel_count": 8428251,
+      "status": "processed",
+      "priority": 0,
+      "processing": {
+        "validation_status": "passed",
+        "cog_created": true,
+        "size_reduction": "-34.5%",
+        "processing_time_seconds": 0.38
+      },
+      "created_at": "2025-09-20T23:42:45.905Z"
+    },
+    "dataset_5a196067": {
+      "id": "dataset_5a196067",
+      "tenant_id": "tenant_001",
+      "type": "customer_private",
+      "name": "Regional Dataset dataset_5a196067",
+      "classification_system": "FBFM40",
+      "resolution_meters": 10.000926430517737,
+      "original_file": "../storage/tenant_001/original/dataset_5a196067_original.tif",
+      "normalized_cog": "../storage/tenant_001/processed/dataset_5a196067.cog.tif",
+      "bbox": [
+        -13409257.859400544,
+        4499128.8,
+        -13330250.540599454,
+        4535832.2
+      ],
+      "pixel_count": 28993000,
+      "status": "processed",
+      "priority": 1,
+      "processing": {
+        "validation_status": "passed_with_warnings",
+        "cog_created": true,
+        "size_reduction": "-10987%",
+        "processing_time_seconds": 0.33
+      },
+      "created_at": "2025-09-20T23:43:19.102Z"
     }
   },
   "class_mappings": {
@@ -409,6 +513,30 @@
       "auto_mapped_count": 99,
       "manual_review_count": 0,
       "created_at": "2025-09-20T22:18:59.372Z"
+    },
+    "FBFM40_to_FBFM40_dataset_b9330eb9": {
+      "source_system": "FBFM40",
+      "target_system": "FBFM40",
+      "mappings": {
+        "1": 1,
+        "11": 11
+      },
+      "unmapped_classes": [],
+      "auto_mapped_count": 2,
+      "manual_review_count": 0,
+      "created_at": "2025-09-20T22:58:43.201Z"
+    },
+    "FBFM40_to_FBFM40_dataset_5a196067": {
+      "source_system": "FBFM40",
+      "target_system": "FBFM40",
+      "mappings": {
+        "1": 1,
+        "11": 11
+      },
+      "unmapped_classes": [],
+      "auto_mapped_count": 2,
+      "manual_review_count": 0,
+      "created_at": "2025-09-20T23:43:19.108Z"
     }
   },
   "spatial_coverage": {
@@ -476,6 +604,70 @@
         },
         "priority": 1,
         "resolution_meters": 0.01
+      },
+      {
+        "dataset_id": "dataset_b9330eb9",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -13409257.859400544,
+                4499128.8
+              ],
+              [
+                -13330250.540599454,
+                4499128.8
+              ],
+              [
+                -13330250.540599454,
+                4535832.2
+              ],
+              [
+                -13409257.859400544,
+                4535832.2
+              ],
+              [
+                -13409257.859400544,
+                4499128.8
+              ]
+            ]
+          ]
+        },
+        "priority": 1,
+        "resolution_meters": 10.000926430517737
+      },
+      {
+        "dataset_id": "dataset_5a196067",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -13409257.859400544,
+                4499128.8
+              ],
+              [
+                -13330250.540599454,
+                4499128.8
+              ],
+              [
+                -13330250.540599454,
+                4535832.2
+              ],
+              [
+                -13409257.859400544,
+                4535832.2
+              ],
+              [
+                -13409257.859400544,
+                4499128.8
+              ]
+            ]
+          ]
+        },
+        "priority": 1,
+        "resolution_meters": 10.000926430517737
       }
     ],
     "system": [
@@ -606,6 +798,70 @@
         },
         "priority": 0,
         "resolution_meters": 7.2
+      },
+      {
+        "dataset_id": "dataset_a9b62989",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -2136975,
+                1841265
+              ],
+              [
+                -2038245,
+                1841265
+              ],
+              [
+                -2038245,
+                1918095
+              ],
+              [
+                -2136975,
+                1918095
+              ],
+              [
+                -2136975,
+                1841265
+              ]
+            ]
+          ]
+        },
+        "priority": 0,
+        "resolution_meters": 30
+      },
+      {
+        "dataset_id": "dataset_4fdce568",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -2136975,
+                1841265
+              ],
+              [
+                -2038245,
+                1841265
+              ],
+              [
+                -2038245,
+                1918095
+              ],
+              [
+                -2136975,
+                1918095
+              ],
+              [
+                -2136975,
+                1841265
+              ]
+            ]
+          ]
+        },
+        "priority": 0,
+        "resolution_meters": 30
       }
     ]
   },
