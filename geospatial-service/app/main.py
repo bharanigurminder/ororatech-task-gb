@@ -12,6 +12,9 @@ from fastapi.responses import JSONResponse
 
 from app.services.gdal_processor import GDALProcessor
 from app.services.class_mapper import ClassReconciler
+import sys
+sys.path.append('..')
+from class_reconciliation_v1 import FuelModelReconciliation
 from app.models.dataset import (
     ProcessingRequest,
     ProcessingResult,
@@ -42,6 +45,7 @@ app.add_middleware(
 # Initialize services
 gdal_processor = GDALProcessor()
 class_reconciler = ClassReconciler()
+fbfm40_reconciler = FuelModelReconciliation()
 
 # Ensure storage directories exist
 STORAGE_BASE = Path("../storage")
@@ -65,7 +69,8 @@ def setup_storage_paths(tenant_id: str, dataset_id: str) -> dict:
 
     return {
         "original": original_dir / f"{dataset_id}_original.tif",
-        "cog": processed_dir / f"{dataset_id}.cog.tif"
+        "cog": processed_dir / f"{dataset_id}.cog.tif",
+        "processed": processed_dir / f"{dataset_id}_reconciled.tif"
     }
 
 @app.get("/health", response_model=HealthCheck)
@@ -92,7 +97,7 @@ async def process_fuel_map(
     background_tasks: BackgroundTasks,
     file: UploadFile = File(..., description="GeoTIFF fuel map file"),
     tenant_id: str = Form(..., description="Tenant identifier"),
-    classification_system: str = Form(default="auto-detect", description="Classification system or auto-detect"),
+    classification_system: str = Form(default="FBFM40", description="Classification system"),
     dataset_type: str = Form(default="regional", description="Dataset type: 'regional' or 'global'"),
     force_reprocess: bool = Form(default=False, description="Force reprocessing")
 ):
@@ -143,45 +148,118 @@ async def process_fuel_map(
                 validation=validation
             )
 
-        # Step 2: Detect classification system
-        if classification_system == "auto-detect":
-            detected_system = await class_reconciler.detect_classification_system(
-                validation.detected_classes or []
-            )
-            print(f"Detected classification system: {detected_system}")
-        else:
-            detected_system = classification_system
-
-        # Step 3: Create class mapping
-        mapping_result = await class_reconciler.create_class_mapping(
-            detected_system,
-            validation.detected_classes or []
-        )
-
-        print(f"Class mapping: {mapping_result.auto_mapped_count} auto-mapped, {mapping_result.manual_review_count} need review")
-
-        # Step 4: Save original file
+        # Step 2: Save original file
         shutil.copy2(temp_path, storage_paths["original"])
         print(f"Saved original file: {storage_paths['original']}")
 
-        # Step 5: Convert to COG with optional class mapping
-        class_mapping_dict = mapping_result.mappings if mapping_result.auto_mappable else None
+        # Save metadata for the dataset
+        metadata = {
+            "dataset_id": dataset_id,
+            "dataset_type": dataset_type,
+            "classification_system": classification_system,
+            "filename": file.filename,
+            "created_at": time.time(),
+            "tenant_id": tenant_id
+        }
+        metadata_path = storage_paths["original"].parent / f"{dataset_id}_metadata.json"
+        with open(metadata_path, 'w') as f:
+            import json
+            json.dump(metadata, f, indent=2)
 
-        print(f"Converting to COG: {storage_paths['cog']}")
-        cog_result = await gdal_processor.convert_to_cog(
-            str(storage_paths["original"]),
-            str(storage_paths["cog"]),
-            class_mapping_dict
-        )
+        # Step 3: Process based on dataset type
+        if dataset_type == "global":
+            # For global datasets, skip class reconciliation
+            print("Processing global dataset - skipping class reconciliation")
+
+            # Convert directly to COG without class mapping
+            print(f"Converting to COG: {storage_paths['cog']}")
+            cog_result = await gdal_processor.convert_to_cog(
+                str(storage_paths["original"]),
+                str(storage_paths["cog"]),
+                None  # No class mapping for global datasets
+            )
+
+            detected_system = classification_system
+            mapping_result = None
+
+        else:
+            # For regional datasets, apply class reconciliation if FBFM40
+            print("Processing regional dataset")
+
+            if classification_system == "FBFM40":
+                # Use class_reconciliation_v1.py for FBFM40
+                print("Applying FBFM40 class reconciliation")
+
+                # Create temporary output path for reconciled file
+                with tempfile.NamedTemporaryFile(delete=False, suffix='_reconciled.tif') as tmp_reconciled:
+                    reconciled_path = Path(tmp_reconciled.name)
+                    temp_files.append(reconciled_path)
+
+                try:
+                    # Process with FuelModelReconciliation
+                    fbfm40_reconciler.process_reconciliation(
+                        str(temp_path),
+                        str(reconciled_path),
+                        run_validation=False,  # Skip validation for faster processing
+                        keep_original_projection=True  # Keep original projection
+                    )
+                    success = reconciled_path.exists()
+
+                    if success:
+                        # Save reconciled file to processed directory
+                        shutil.copy2(reconciled_path, storage_paths["processed"])
+
+                        # Convert reconciled file to COG
+                        print(f"Converting reconciled file to COG: {storage_paths['cog']}")
+                        cog_result = await gdal_processor.convert_to_cog(
+                            str(storage_paths["processed"]),
+                            str(storage_paths["cog"]),
+                            None
+                        )
+                    else:
+                        # If reconciliation fails, convert original to COG
+                        print("Class reconciliation failed, converting original to COG")
+                        cog_result = await gdal_processor.convert_to_cog(
+                            str(storage_paths["original"]),
+                            str(storage_paths["cog"]),
+                            None
+                        )
+
+                except Exception as e:
+                    print(f"Error in class reconciliation: {e}")
+                    # Fallback to converting original to COG
+                    cog_result = await gdal_processor.convert_to_cog(
+                        str(storage_paths["original"]),
+                        str(storage_paths["cog"]),
+                        None
+                    )
+
+            else:
+                # For other classification systems, just convert to COG
+                print(f"Classification system {classification_system} not supported for reconciliation")
+                cog_result = await gdal_processor.convert_to_cog(
+                    str(storage_paths["original"]),
+                    str(storage_paths["cog"]),
+                    None
+                )
+
+            detected_system = classification_system
+
+            # Create a simple mapping result for compatibility
+            mapping_result = await class_reconciler.create_class_mapping(
+                detected_system,
+                validation.detected_classes or []
+            )
 
         if not cog_result.success:
             return ProcessingResult(
                 success=False,
                 error=f"COG conversion failed: {cog_result.error}",
+                dataset_type=dataset_type,
                 validation=validation,
                 classification={
                     "detected_system": detected_system,
-                    "mapping": mapping_result.dict()
+                    "mapping": mapping_result.dict() if mapping_result else None
                 }
             )
 
@@ -202,15 +280,17 @@ async def process_fuel_map(
         return ProcessingResult(
             success=True,
             dataset_id=dataset_id,
+            dataset_type=dataset_type,
             validation=validation,
             classification={
                 "detected_system": detected_system,
-                "mapping": mapping_result.dict()
+                "mapping": mapping_result.dict() if mapping_result else None
             },
             processing=cog_result,
             paths={
                 "original": str(storage_paths["original"]),
-                "cog": str(storage_paths["cog"])
+                "cog": str(storage_paths["cog"]),
+                "processed": str(storage_paths["processed"]) if "processed" in storage_paths else None
             },
             processing_time_seconds=round(total_time, 2)
         )
@@ -360,7 +440,9 @@ async def get_datasets(tenant_id: str = "tenant_001"):
         if not processed_dir.exists():
             return {"success": True, "datasets": []}
 
-        datasets = []
+        owned_datasets = []
+        global_datasets = []
+
         for cog_file in processed_dir.glob("*.cog.tif"):
             # Skip hidden files (macOS metadata files)
             if cog_file.name.startswith("._"):
@@ -368,21 +450,54 @@ async def get_datasets(tenant_id: str = "tenant_001"):
 
             dataset_id = cog_file.stem.replace(".cog", "")
             original_file = tenant_dir / "original" / f"{dataset_id}_original.tif"
+            metadata_file = tenant_dir / "original" / f"{dataset_id}_metadata.json"
 
             # Get file info
             file_stats = cog_file.stat()
             file_size_mb = round(file_stats.st_size / (1024 * 1024), 2)
 
-            datasets.append({
+            # Read metadata if it exists
+            dataset_type = "regional"  # default
+            classification_system = "FBFM40"  # default
+            filename = dataset_id
+
+            if metadata_file.exists():
+                try:
+                    import json
+                    with open(metadata_file, 'r') as f:
+                        metadata = json.load(f)
+                        dataset_type = metadata.get("dataset_type", "regional")
+                        classification_system = metadata.get("classification_system", "FBFM40")
+                        filename = metadata.get("filename", dataset_id)
+                except Exception as e:
+                    print(f"Error reading metadata for {dataset_id}: {e}")
+
+            dataset_info = {
                 "dataset_id": dataset_id,
+                "name": filename,
+                "dataset_type": dataset_type,
+                "classification_system": classification_system,
                 "cog_path": str(cog_file),
                 "original_path": str(original_file) if original_file.exists() else None,
                 "file_size_mb": file_size_mb,
                 "created_at": file_stats.st_ctime,
                 "status": "processed"
-            })
+            }
 
-        return {"success": True, "datasets": datasets}
+            # Categorize datasets by type
+            if dataset_type == "global":
+                global_datasets.append(dataset_info)
+            else:
+                owned_datasets.append(dataset_info)
+
+        return {
+            "success": True,
+            "datasets": {
+                "owned": owned_datasets,
+                "shared": [],  # No shared datasets for now
+                "global": global_datasets
+            }
+        }
 
     except Exception as e:
         return {"success": False, "error": str(e)}

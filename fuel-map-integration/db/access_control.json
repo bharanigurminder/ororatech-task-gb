@@ -2,7 +2,8 @@
   "tenant_datasets": {
     "tenant_001": {
       "private_datasets": [
-        "dataset_01ed0365"
+        "dataset_01ed0365",
+        "dataset_a179cd92"
       ],
       "shared_datasets": [],
       "global_access": true
@@ -15,6 +16,14 @@
   },
   "dataset_permissions": {
     "dataset_01ed0365": {
+      "owner": "tenant_001",
+      "visibility": "private",
+      "allowed_tenants": [
+        "tenant_001"
+      ],
+      "public_access": false
+    },
+    "dataset_a179cd92": {
       "owner": "tenant_001",
       "visibility": "private",
       "allowed_tenants": [

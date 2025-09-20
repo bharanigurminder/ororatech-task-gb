@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { LocalJSONDatabase } from '@/lib/database';
+import { TenantService } from '@/lib/tenant-service';
 
 const FASTAPI_URL = process.env.FASTAPI_URL || 'http://localhost:8001';
+const db = new LocalJSONDatabase();
+const tenantService = new TenantService(db);
 
 export async function GET(request: NextRequest) {
   try {
@@ -24,34 +28,52 @@ export async function GET(request: NextRequest) {
     const ownedDatasets: any[] = [];
     const globalDatasets: any[] = [];
 
-    data.datasets.forEach((dataset: any) => {
-      const datasetObj = {
-        id: dataset.dataset_id,
-        name: dataset.dataset_id,
-        type: dataset.dataset_id.toLowerCase().includes('lc24') || dataset.dataset_id.toLowerCase().includes('global') ? 'global_baseline' : 'customer_private',
-        classification_system: 'auto-detected',
-        resolution_meters: 30,
-        status: dataset.status,
-        priority: 1,
-        pixel_count: Math.floor(dataset.file_size_mb * 1024 * 256), // rough estimate
-        created_at: new Date(dataset.created_at * 1000).toISOString(),
-        processing: {
-          validation_status: 'valid',
-          cog_created: true,
-          size_reduction: `${dataset.file_size_mb}MB`,
-          processing_time_seconds: 0
-        }
-      };
-
-      // Categorize based on type or filename patterns
-      if (datasetObj.type === 'global_baseline' ||
-          dataset.dataset_id.toLowerCase().includes('lc24') ||
-          dataset.dataset_id.toLowerCase().includes('global')) {
-        globalDatasets.push(datasetObj);
-      } else {
+    // Handle the new format where datasets are already categorized
+    if (data.datasets.owned) {
+      data.datasets.owned.forEach((dataset: any) => {
+        const datasetObj = {
+          id: dataset.dataset_id,
+          name: dataset.name || dataset.dataset_id,
+          type: 'customer_private',
+          classification_system: dataset.classification_system || 'auto-detected',
+          resolution_meters: 30,
+          status: dataset.status,
+          priority: 1,
+          pixel_count: Math.floor(dataset.file_size_mb * 1024 * 256), // rough estimate
+          created_at: new Date(dataset.created_at * 1000).toISOString(),
+          processing: {
+            validation_status: 'valid',
+            cog_created: true,
+            size_reduction: `${dataset.file_size_mb}MB`,
+            processing_time_seconds: 0
+          }
+        };
         ownedDatasets.push(datasetObj);
-      }
-    });
+      });
+    }
+
+    if (data.datasets.global) {
+      data.datasets.global.forEach((dataset: any) => {
+        const datasetObj = {
+          id: dataset.dataset_id,
+          name: dataset.name || dataset.dataset_id,
+          type: 'global_baseline',
+          classification_system: dataset.classification_system || 'auto-detected',
+          resolution_meters: 30,
+          status: dataset.status,
+          priority: 0,
+          pixel_count: Math.floor(dataset.file_size_mb * 1024 * 256), // rough estimate
+          created_at: new Date(dataset.created_at * 1000).toISOString(),
+          processing: {
+            validation_status: 'valid',
+            cog_created: true,
+            size_reduction: `${dataset.file_size_mb}MB`,
+            processing_time_seconds: 0
+          }
+        };
+        globalDatasets.push(datasetObj);
+      });
+    }
 
     const datasets = {
       owned: ownedDatasets,

@@ -13,7 +13,7 @@ export default function FileUploadZone({ tenantId, onUploadSuccess, onUploadErro
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [classificationSystem, setClassificationSystem] = useState('auto-detect');
+  const [classificationSystem, setClassificationSystem] = useState('FBFM40');
   const [datasetType, setDatasetType] = useState<'regional' | 'global'>('regional');
   const [forceReprocess, setForceReprocess] = useState(false);
 
@@ -222,11 +222,10 @@ export default function FileUploadZone({ tenantId, onUploadSuccess, onUploadErro
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 disabled={isUploading}
               >
-                <option value="auto-detect">Auto-detect</option>
                 <option value="FBFM40">FBFM40 (Anderson Fire Behavior)</option>
-                <option value="SENTINEL_FUEL_2024">Sentinel Fuel 2024</option>
-                <option value="LANDFIRE_US">LANDFIRE US</option>
-                <option value="CANADIAN_FBP">Canadian FBP</option>
+                <option value="SENTINEL_FUEL_2024">TODO: Sentinel Fuel 2024</option>
+                <option value="LANDFIRE_US">TODO: LANDFIRE US</option>
+                <option value="CANADIAN_FBP">TODO: Canadian FBP</option>
               </select>
             </div>
 

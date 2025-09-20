@@ -117,6 +117,58 @@
         "processing_time_seconds": 1.01
       },
       "created_at": "2025-09-19T18:51:42.357Z"
+    },
+    "dataset_a179cd92": {
+      "id": "dataset_a179cd92",
+      "tenant_id": "tenant_001",
+      "type": "customer_private",
+      "name": "Regional Dataset dataset_a179cd92",
+      "classification_system": "FBFM40",
+      "resolution_meters": 0.01,
+      "original_file": "../storage/tenant_001/original/dataset_a179cd92_original.tif",
+      "normalized_cog": "../storage/tenant_001/processed/dataset_a179cd92.cog.tif",
+      "bbox": [
+        -120,
+        37,
+        -119,
+        38
+      ],
+      "pixel_count": 10000,
+      "status": "processed",
+      "priority": 1,
+      "processing": {
+        "validation_status": "passed_with_warnings",
+        "cog_created": true,
+        "size_reduction": "-197.8%",
+        "processing_time_seconds": 0.25
+      },
+      "created_at": "2025-09-20T22:18:59.366Z"
+    },
+    "dataset_c5d58236": {
+      "id": "dataset_c5d58236",
+      "tenant_id": "system",
+      "type": "global_baseline",
+      "name": "Global Baseline dataset_c5d58236",
+      "classification_system": "FBFM40",
+      "resolution_meters": 7.2,
+      "original_file": "../storage/tenant_001/original/dataset_c5d58236_original.tif",
+      "normalized_cog": "../storage/tenant_001/processed/dataset_c5d58236.cog.tif",
+      "bbox": [
+        -180,
+        -90,
+        180,
+        90
+      ],
+      "pixel_count": 2500,
+      "status": "processed",
+      "priority": 0,
+      "processing": {
+        "validation_status": "passed_with_warnings",
+        "cog_created": true,
+        "size_reduction": "-656.9%",
+        "processing_time_seconds": 0.12
+      },
+      "created_at": "2025-09-20T22:19:19.010Z"
     }
   },
   "class_mappings": {
@@ -248,6 +300,115 @@
       "auto_mapped_count": 27,
       "manual_review_count": 0,
       "created_at": "2025-09-19T18:51:42.366Z"
+    },
+    "FBFM40_to_FBFM40_dataset_a179cd92": {
+      "source_system": "FBFM40",
+      "target_system": "FBFM40",
+      "mappings": {
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        "4": 4,
+        "5": 5,
+        "6": 6,
+        "7": 7,
+        "8": 8,
+        "9": 9,
+        "10": 10,
+        "11": 11,
+        "12": 12,
+        "13": 13,
+        "14": 14,
+        "15": 15,
+        "16": 16,
+        "17": 17,
+        "18": 18,
+        "19": 19,
+        "20": 20,
+        "21": 21,
+        "22": 22,
+        "23": 23,
+        "24": 24,
+        "25": 25,
+        "26": 26,
+        "27": 27,
+        "28": 28,
+        "29": 29,
+        "30": 30,
+        "31": 31,
+        "32": 32,
+        "33": 33,
+        "34": 34,
+        "35": 35,
+        "36": 36,
+        "37": 37,
+        "38": 38,
+        "39": 39,
+        "40": 40,
+        "41": 41,
+        "42": 42,
+        "43": 43,
+        "44": 44,
+        "45": 45,
+        "46": 46,
+        "47": 47,
+        "48": 48,
+        "49": 49,
+        "50": 50,
+        "51": 51,
+        "52": 52,
+        "53": 53,
+        "54": 54,
+        "55": 55,
+        "56": 56,
+        "57": 57,
+        "58": 58,
+        "59": 59,
+        "60": 60,
+        "61": 61,
+        "62": 62,
+        "63": 63,
+        "64": 64,
+        "65": 65,
+        "66": 66,
+        "67": 67,
+        "68": 68,
+        "69": 69,
+        "70": 70,
+        "71": 71,
+        "72": 72,
+        "73": 73,
+        "74": 74,
+        "75": 75,
+        "76": 76,
+        "77": 77,
+        "78": 78,
+        "79": 79,
+        "80": 80,
+        "81": 81,
+        "82": 82,
+        "83": 83,
+        "84": 84,
+        "85": 85,
+        "86": 86,
+        "87": 87,
+        "88": 88,
+        "89": 89,
+        "90": 90,
+        "91": 91,
+        "92": 92,
+        "93": 93,
+        "94": 94,
+        "95": 95,
+        "96": 96,
+        "97": 97,
+        "98": 98,
+        "99": 99
+      },
+      "unmapped_classes": [],
+      "auto_mapped_count": 99,
+      "manual_review_count": 0,
+      "created_at": "2025-09-20T22:18:59.372Z"
     }
   },
   "spatial_coverage": {
@@ -283,6 +444,38 @@
         },
         "priority": 1,
         "resolution_meters": 10.000045742818513
+      },
+      {
+        "dataset_id": "dataset_a179cd92",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -120,
+                37
+              ],
+              [
+                -119,
+                37
+              ],
+              [
+                -119,
+                38
+              ],
+              [
+                -120,
+                38
+              ],
+              [
+                -120,
+                37
+              ]
+            ]
+          ]
+        },
+        "priority": 1,
+        "resolution_meters": 0.01
       }
     ],
     "system": [
@@ -381,6 +574,38 @@
         },
         "priority": 0,
         "resolution_meters": 30
+      },
+      {
+        "dataset_id": "dataset_c5d58236",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -180,
+                -90
+              ],
+              [
+                180,
+                -90
+              ],
+              [
+                180,
+                90
+              ],
+              [
+                -180,
+                90
+              ],
+              [
+                -180,
+                -90
+              ]
+            ]
+          ]
+        },
+        "priority": 0,
+        "resolution_meters": 7.2
       }
     ]
   },

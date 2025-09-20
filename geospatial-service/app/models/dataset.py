@@ -68,6 +68,7 @@ class ProcessingRequest(BaseModel):
 class ProcessingResult(BaseModel):
     success: bool
     dataset_id: Optional[str] = None
+    dataset_type: Optional[str] = None
     validation: Optional[ValidationResult] = None
     classification: Optional[Dict[str, Any]] = None
     processing: Optional[COGResult] = None
