@@ -1,17 +1,24 @@
 # Fuel Map Integration Platform
 
-A geospatial data processing platform for wildfire fuel map integration, featuring automatic class reconciliation, multi-tenant support, and web-based visualization.
+A comprehensive geospatial data processing platform for wildfire fuel map integration, featuring automatic class reconciliation from ESRI PFA to FBFM40 standards, multi-tenant support, and advanced web-based visualization.
 
-## 🚀 Features
+## Key Features
 
-- **Automatic Class Reconciliation**: Maps different fuel classification systems to FBFM40 standard
+### Core Capabilities
+- **Automatic Class Reconciliation**: Intelligent mapping from ESRI PFA land cover classes to FBFM40 fuel model standards
+- **Grid Alignment**: Automatic alignment to LANDFIRE 30m grid system for seamless integration
 - **Cloud Optimized GeoTIFF (COG)**: Efficient storage and web-serving of large geospatial datasets
-- **Multi-Tenant Support**: Complete data isolation between customers
-- **Interactive Visualization**: Web-based map interface for viewing fuel data coverage
-- **Self-Service Upload**: No engineering intervention required for data integration
-- **Large File Support**: Handles GeoTIFF files up to 10GB+
+- **Multi-Tenant Architecture**: Complete data isolation between customers with tenant-specific storage
+- **Interactive Web Interface**: React-based dashboard with real-time map visualization
 
-## 📋 Prerequisites
+### Advanced Processing
+- **Classification Detection**: Automatic identification of input classification systems (ESRI PFA, LANDFIRE, Sentinel, etc.)
+- **Projection Handling**: Automatic reprojection to NAD83 / Conus Albers (EPSG:5070)
+- **Resolution Preservation**: Maintains input resolution (10m for Sentinel) while aligning to 30m grid
+- **Large File Support**: Handles GeoTIFF files up to 10GB with streaming processing
+- **Batch Operations**: Delete all datasets functionality for easy data management
+
+## Prerequisites
 
 - Python 3.9 or higher
 - Node.js 18.x or higher
@@ -19,7 +26,7 @@ A geospatial data processing platform for wildfire fuel map integration, featuri
 - 8GB RAM minimum (16GB recommended for large files)
 - 10GB free disk space
 
-## 🛠️ Installation
+## Installation
 
 ### 1. Clone the Repository
 
@@ -71,7 +78,7 @@ cd ../fuel-map-integration
 npm install
 ```
 
-## 📦 Python Requirements
+## Python Requirements
 
 Create `geospatial-service/requirements.txt`:
 
@@ -96,7 +103,7 @@ aiofiles==23.2.1
 psutil==5.9.6
 ```
 
-## 🚀 Running the Application
+## Running the Application
 
 ### Start the Backend Server
 
@@ -127,60 +134,201 @@ npm run dev
 
 The frontend will be available at: `http://localhost:3000`
 
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 ororatech-task/
-├── geospatial-service/          # FastAPI Backend
+├── geospatial-service/              # FastAPI Backend Service
 │   ├── app/
-│   │   ├── main.py             # FastAPI application entry
-│   │   ├── models/             # Pydantic models
-│   │   │   └── dataset.py      # Data models
-│   │   └── services/           # Business logic
-│   │       ├── gdal_processor.py    # GDAL/COG processing
-│   │       └── class_mapper.py      # Class reconciliation
-│   └── requirements.txt        # Python dependencies
+│   │   ├── main.py                 # FastAPI application & endpoints
+│   │   ├── models/                 # Pydantic data models
+│   │   │   └── dataset.py          # Dataset & classification models
+│   │   └── services/               # Core business logic
+│   │       ├── gdal_processor.py   # GDAL operations & COG conversion
+│   │       ├── class_mapper.py     # Classification detection & mapping
+│   │       └── mock_gdal_processor.py  # Testing utilities
+│   └── requirements.txt            # Python dependencies
 │
-├── fuel-map-integration/        # Next.js Frontend
-│   ├── app/                    # Next.js app directory
-│   │   ├── api/               # API routes (proxies to FastAPI)
-│   │   └── page.tsx           # Main application page
-│   ├── components/            # React components
-│   │   ├── FileUploadZone.tsx     # Drag-drop upload
-│   │   ├── DatasetDashboard.tsx   # Dataset management
-│   │   └── CoverageMap.tsx        # Map visualization
-│   ├── package.json           # Node dependencies
-│   └── next.config.js         # Next.js configuration
+├── fuel-map-integration/            # Next.js Frontend Application
+│   ├── app/                        # Next.js app router
+│   │   ├── api/                   # API route handlers
+│   │   │   ├── process-geospatial/ # File upload proxy
+│   │   │   ├── datasets/          # Dataset CRUD operations
+│   │   │   ├── coverage/          # Coverage analysis
+│   │   │   ├── fuel-query/        # Fuel data queries
+│   │   │   └── detect-classification/ # Classification detection
+│   │   ├── page.tsx               # Main application page
+│   │   └── layout.tsx             # Root layout
+│   ├── components/                # React components
+│   │   ├── FileUploadZone.tsx    # Drag-drop file upload
+│   │   ├── DatasetDashboard.tsx  # Dataset management UI
+│   │   ├── CoverageMap.tsx       # Interactive Leaflet map
+│   │   ├── ClassMappingReview.tsx # Class mapping visualization
+│   │   └── ProcessingStatus.tsx  # Upload progress tracking
+│   ├── lib/                      # Utilities
+│   │   └── api-client.ts         # API client functions
+│   ├── package.json              # Node dependencies
+│   └── next.config.js            # Next.js configuration
 │
-└── storage/                    # Data storage (created automatically)
-    └── [tenant_id]/
-        ├── original/          # Original uploaded files
-        └── processed/         # Processed COG files
-```
+├── class_reconciliation_enhanced.py # Standalone ESRI->FBFM40 processor
+├── download_esri_lulc.py          # ESRI data downloader utility
+│
+└── storage/                        # Data storage (auto-created)
+    └── [tenant_id]/               # Tenant-specific storage
+        ├── original/              # Raw uploaded files
+        ├── processed/             # Reconciled FBFM40 files
+        └── cog/                   # Cloud Optimized GeoTIFFs
 
-## 📊 Usage
+## Class Reconciliation System
+
+### Overview
+The platform features an advanced class reconciliation system that automatically converts ESRI PFA land cover classifications to FBFM40 fuel model standards.
+
+### ESRI PFA to FBFM40 Mapping Table
+
+| ESRI PFA Class | Name | FBFM40 Code | FBFM40 Description | Confidence |
+|----------------|------|-------------|-------------------|------------|
+| 1 | Water | 98 | NB8 - Open Water | 95% |
+| 2 | Trees | 183 | TL3 - Moderate load conifer litter | 55% |
+| 4 | Flooded vegetation | 121 | GS1 - Low load grass-shrub mix | 60% |
+| 5 | Crops | 102 | GR2 - Low load, dry climate grass | 75% |
+| 7 | Built Area | 91 | NB1 - Urban/Developed | 90% |
+| 8 | Bare ground | 99 | NB9 - Barren | 85% |
+| 9 | Snow/Ice | 92 | NB2 - Snow/Ice | 95% |
+| 10 | Clouds | 183 | TL3 - Default forest | 20% |
+| 11 | Rangeland | 102 | GR2 - Low load grass | 70% |
+
+### Processing Pipeline
+
+1. **Detection Phase**
+   - System analyzes input GeoTIFF to identify unique class values
+   - Automatically detects if file contains ESRI PFA classifications
+
+2. **Reconciliation Phase** (for ESRI_PFA files)
+   - Reprojects from Web Mercator (EPSG:3857) to NAD83/Conus Albers (EPSG:5070)
+   - Aligns to LANDFIRE 30m grid for seamless integration
+   - Applies class mapping according to the table above
+   - Preserves original resolution (10m for Sentinel data)
+
+3. **Optimization Phase**
+   - Converts to Cloud Optimized GeoTIFF (COG)
+   - Creates tiled structure for efficient web serving
+   - Applies LZW compression to reduce file size
+
+### Grid Alignment Details
+
+- **Reference Grid**: LANDFIRE CONUS 30m grid
+- **Origin Point**: (-2362425.0, 3310005.0) in EPSG:5070
+- **Grid Resolution**: 30m x 30m cells
+- **Output Resolution**: Maintains input resolution (typically 10m) aligned to 30m grid boundaries
+
+## Usage
 
 ### 1. Upload a Fuel Map
 
 1. Navigate to `http://localhost:3000`
 2. Click on the **Upload** tab
 3. Drag and drop a GeoTIFF file or click to browse
-4. Select classification system (or use auto-detect)
+4. System auto-detects classification (or select manually)
 5. Click **Process File**
+6. View real-time processing status
 
 ### 2. View Datasets
 
 1. Click on the **Datasets** tab
 2. View all uploaded datasets with metadata
-3. Click **Delete All Datasets** to clear all data
+3. See classification system and mapping details
+4. Click **Delete All Datasets** to clear all data
 
 ### 3. View Coverage Map
 
 1. Click on the **Coverage** tab
-2. See spatial extent of uploaded datasets
+2. Interactive Leaflet map shows spatial extent
 3. Click on polygons for dataset details
+4. Zoom and pan to explore coverage
 
-## 🔧 Configuration
+## System Architecture
+
+### Component Overview
+
+```mermaid
+graph TB
+    subgraph "Frontend (Next.js)"
+        UI[React UI Components]
+        API[Next.js API Routes]
+    end
+
+    subgraph "Backend (FastAPI)"
+        FP[FastAPI Server]
+        GP[GDAL Processor]
+        CM[Class Mapper]
+        CR[Class Reconciler]
+    end
+
+    subgraph "Storage"
+        FS[File System]
+        COG[COG Storage]
+    end
+
+    subgraph "External"
+        ESRI[ESRI ImageServer]
+        LF[LANDFIRE Reference]
+    end
+
+    UI --> API
+    API --> FP
+    FP --> GP
+    FP --> CM
+    FP --> CR
+    GP --> FS
+    CR --> LF
+    GP --> COG
+    CR --> ESRI
+```
+
+### Data Flow
+
+1. **Upload Phase**
+   - User uploads GeoTIFF via React UI
+   - File streams through Next.js proxy to FastAPI
+   - FastAPI validates file format and size
+
+2. **Detection Phase**
+   - GDAL processor extracts raster metadata
+   - Class mapper analyzes unique pixel values
+   - System identifies classification type (ESRI_PFA, FBFM40, etc.)
+
+3. **Reconciliation Phase** (if needed)
+   - For ESRI_PFA files:
+     - Load reference LANDFIRE grid parameters
+     - Reproject to EPSG:5070 (NAD83/Conus Albers)
+     - Align to 30m grid boundaries
+     - Apply class mappings (ESRI → FBFM40)
+
+4. **Optimization Phase**
+   - Convert to Cloud Optimized GeoTIFF
+   - Create internal tiling (512x512 blocks)
+   - Apply LZW compression
+   - Generate overviews for zoom levels
+
+5. **Storage Phase**
+   - Save original to `storage/{tenant_id}/original/`
+   - Save processed to `storage/{tenant_id}/processed/`
+   - Save COG to `storage/{tenant_id}/cog/`
+
+### Technology Stack
+
+| Layer | Technology | Purpose |
+|-------|------------|---------|
+| **Frontend** | Next.js 14, React 18, TypeScript | Modern web interface |
+| **UI Components** | Tailwind CSS, Radix UI | Styling and components |
+| **Maps** | Leaflet, React-Leaflet | Interactive map visualization |
+| **Backend** | FastAPI, Python 3.9+ | High-performance API server |
+| **Geospatial** | GDAL 3.8, Rasterio 1.3 | Raster processing |
+| **Processing** | NumPy, Custom Reconciler | Data transformation |
+| **Storage** | File System, COG | Efficient data storage |
+
+## Configuration
 
 ### Environment Variables
 
@@ -198,7 +346,7 @@ STORAGE_BASE_PATH=../storage
 MAX_UPLOAD_SIZE=10737418240  # 10GB in bytes
 ```
 
-## 🧪 Testing
+## Testing
 
 ### Test with Sample Data
 
@@ -218,7 +366,7 @@ curl http://localhost:8001/health
 curl http://localhost:3000/api/datasets?tenant_id=tenant_001
 ```
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -256,53 +404,92 @@ PYTHONUNBUFFERED=1 uvicorn app.main:app --log-level debug
 DEBUG=* npm run dev
 ```
 
-## 📚 API Documentation
+## API Documentation
 
 ### FastAPI Interactive Docs
 Visit `http://localhost:8001/docs` for interactive API documentation with request/response schemas
 
-### Backend API Endpoints (FastAPI)
+### Backend API Endpoints (FastAPI - Port 8001)
 
-#### 🔄 Data Processing
+#### Core Processing Endpoints
 
 **`POST /process-fuel-map`**
-Upload and process a GeoTIFF fuel map file.
+Upload and process a GeoTIFF fuel map file with automatic class reconciliation.
 
 ```bash
 curl -X POST "http://localhost:8001/process-fuel-map" \
   -H "Content-Type: multipart/form-data" \
   -F "file=@path/to/fuelmap.tif" \
   -F "tenant_id=tenant_001" \
-  -F "classification_system=FBFM40"
+  -F "classification_system=ESRI_PFA"
 ```
 
 **Request Parameters:**
-- `file` (required): GeoTIFF file upload
+- `file` (required): GeoTIFF file upload (max 10GB)
 - `tenant_id` (required): Tenant identifier (e.g., "tenant_001")
-- `classification_system` (optional): Source classification system. Options:
-  - `FBFM40` (default)
-  - `LANDFIRE_US`
-  - `SENTINEL_FUEL_2024`
-  - `CANADIAN_FBP`
+- `classification_system` (optional): Source classification system
+  - `ESRI_PFA` - ESRI land cover (auto-reconciles to FBFM40)
+  - `FBFM40` - Anderson Fire Behavior Fuel Models (no reconciliation needed)
+  - `LANDFIRE_US` - LANDFIRE fuel models
+  - `SENTINEL_FUEL_2024` - Sentinel-derived fuel classification
+  - `CANADIAN_FBP` - Canadian Forest Fire Behavior Prediction
+  - `UNKNOWN` - Auto-detect classification
 
 **Response:**
 ```json
 {
   "success": true,
   "dataset_id": "dataset_abc123",
-  "message": "Dataset processed successfully",
-  "processing_stats": {
-    "validation_status": "passed_with_warnings",
-    "cog_created": true,
-    "size_reduction": "45%",
-    "processing_time_seconds": 12.34,
+  "dataset_type": "customer_private",
+  "validation": {
+    "is_valid": true,
     "pixel_count": 1000000,
-    "resolution_meters": 30.0
-  }
+    "resolution_meters": 10.0,
+    "detected_classes": [1, 2, 4, 5, 7, 8, 9, 10, 11]
+  },
+  "classification": {
+    "detected_system": "ESRI_PFA",
+    "mapping": {
+      "source_system": "ESRI_PFA",
+      "target_system": "FBFM40",
+      "mapping_required": true,
+      "auto_mappable": true,
+      "mappings": {
+        "1": 98,   // Water -> Open Water
+        "2": 183,  // Trees -> Moderate conifer litter
+        "5": 102,  // Crops -> Low load grass fuels
+        "7": 91    // Built Area -> Urban/Developed
+      }
+    }
+  },
+  "processing_time_seconds": 45.2
 }
 ```
 
-#### 📊 Dataset Management
+**`POST /validate-file`**
+Validate a GeoTIFF file without processing it.
+
+```bash
+curl -X POST "http://localhost:8001/validate-file" \
+  -F "file=@path/to/fuelmap.tif"
+```
+
+**`POST /detect-classification`**
+Detect the classification system of an uploaded file.
+
+```bash
+curl -X POST "http://localhost:8001/detect-classification" \
+  -F "file=@path/to/fuelmap.tif"
+```
+
+**`GET /classification-systems`**
+Get available classification systems and their mappings.
+
+```bash
+curl "http://localhost:8001/classification-systems"
+```
+
+#### Dataset Management
 
 **`GET /datasets`**
 Retrieve all datasets for a tenant.
@@ -338,7 +525,7 @@ Delete all datasets for a tenant.
 curl -X DELETE "http://localhost:8001/datasets/delete-all?tenant_id=tenant_001"
 ```
 
-#### 🗺️ Spatial Data
+#### Spatial Data
 
 **`GET /coverage/{tenant_id}`**
 Get spatial coverage as GeoJSON for map visualization.
@@ -368,7 +555,7 @@ curl "http://localhost:8001/coverage/tenant_001"
 }
 ```
 
-#### 🏥 Health & Statistics
+#### Health & Statistics
 
 **`GET /health`**
 System health check.
@@ -396,18 +583,18 @@ curl "http://localhost:8001/tenants/tenant_001/stats"
 }
 ```
 
-### Frontend API Endpoints (Next.js)
+### Frontend API Routes (Next.js - Port 3000/3002)
 
-#### 🔄 Proxy Endpoints
+#### File Processing
 
 **`POST /api/process-geospatial`**
-Proxy to FastAPI with enhanced timeout handling (10 minutes).
+Upload and process GeoTIFF files with 10-minute timeout handling.
 
 ```javascript
 const formData = new FormData();
 formData.append('file', file);
 formData.append('tenant_id', 'tenant_001');
-formData.append('classification_system', 'FBFM40');
+formData.append('classification_system', 'ESRI_PFA');
 
 const response = await fetch('/api/process-geospatial', {
   method: 'POST',
@@ -415,21 +602,115 @@ const response = await fetch('/api/process-geospatial', {
 });
 ```
 
+**`POST /api/validate-geotiff`**
+Validate file before processing.
+
+```javascript
+const formData = new FormData();
+formData.append('file', file);
+
+const response = await fetch('/api/validate-geotiff', {
+  method: 'POST',
+  body: formData
+});
+```
+
+**`POST /api/detect-classification`**
+Auto-detect classification system.
+
+```javascript
+const response = await fetch('/api/detect-classification', {
+  method: 'POST',
+  body: formData
+});
+```
+
+#### Data Management
+
 **`GET /api/datasets`**
-Proxy to FastAPI datasets endpoint with error handling.
+Retrieve all datasets for a tenant.
 
 ```javascript
 const response = await fetch('/api/datasets?tenant_id=tenant_001');
-const data = await response.json();
+const { owned_datasets, global_datasets } = await response.json();
+```
+
+**`GET /api/datasets/{id}`**
+Get specific dataset details.
+
+```javascript
+const response = await fetch('/api/datasets/dataset_abc123?tenant_id=tenant_001');
+```
+
+**`DELETE /api/datasets/{id}`**
+Delete a specific dataset.
+
+```javascript
+const response = await fetch('/api/datasets/dataset_abc123?tenant_id=tenant_001', {
+  method: 'DELETE'
+});
 ```
 
 **`DELETE /api/datasets/delete-all`**
-Proxy to FastAPI delete endpoint.
+Delete all datasets for a tenant.
 
 ```javascript
 const response = await fetch('/api/datasets/delete-all?tenant_id=tenant_001', {
   method: 'DELETE'
 });
+```
+
+#### Spatial Queries
+
+**`GET /api/coverage/{tenantId}`**
+Get spatial coverage as GeoJSON.
+
+```javascript
+const response = await fetch('/api/coverage/tenant_001');
+const geojson = await response.json();
+```
+
+**`POST /api/coverage/{tenantId}`**
+Analyze coverage gaps in a bounding box.
+
+```javascript
+const response = await fetch('/api/coverage/tenant_001', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    bbox: [-120.5, 37.2, -119.8, 37.4]
+  })
+});
+```
+
+**`GET /api/fuel-query`**
+Query fuel data by coordinates.
+
+```javascript
+// Point query
+const response = await fetch('/api/fuel-query?lat=37.3&lon=-119.9&tenant_id=tenant_001');
+
+// Bounding box query
+const response = await fetch('/api/fuel-query', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    bbox: [-120.5, 37.2, -119.8, 37.4],
+    tenant_id: 'tenant_001',
+    resolution: 30
+  })
+});
+```
+
+#### Statistics
+
+**`GET /api/tenants/{tenantId}/stats`**
+Get tenant usage statistics.
+
+```javascript
+const response = await fetch('/api/tenants/tenant_001/stats');
+const stats = await response.json();
+// Returns: total_datasets, storage_mb, coverage_km2, etc.
 ```
 
 ### Error Responses
@@ -471,14 +752,14 @@ curl -H "Authorization: Bearer your-jwt-token" \
      "http://localhost:8001/datasets"
 ```
 
-## 🔒 Security Notes
+## Security Notes
 
 - Tenant isolation is enforced at the API level
 - File uploads are validated for type and size
 - Each tenant has separate storage directories
 - No cross-tenant data access is possible
 
-## 📈 Performance
+## Performance
 
 | File Size | Processing Time | Memory Usage |
 |-----------|----------------|--------------|
@@ -488,7 +769,60 @@ curl -H "Authorization: Bearer your-jwt-token" \
 
 *Note: Processing times depend on system specifications and file complexity*
 
-## 🤝 Contributing
+## External Data Sources
+
+### ESRI ArcGIS ImageServer
+The platform integrates with ESRI's Sentinel-2 10m Land Cover service for downloading regional data.
+
+**Service URL**: `https://ic.imagery1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer`
+
+**Data Download Script**: `download_esri_lulc.py`
+```bash
+# Download ESRI land cover data for a specific area
+python download_esri_lulc.py --bbox "-120.5,37.2,-119.8,37.4" --output regional_data.tif
+```
+
+### LANDFIRE Reference Data
+The system uses LANDFIRE FBFM40 data as reference for grid alignment.
+
+**Reference File**: `/Users/gurmindersingh/Downloads/LF2024_FBFM40_250_CONUS/Tif/LC24_F40_250_AOI_V2.tif`
+
+- **Coverage**: Continental United States
+- **Resolution**: 30m
+- **Projection**: EPSG:5070 (NAD83 / Conus Albers)
+- **Grid Origin**: (-2362425.0, 3310005.0)
+
+## Advanced Usage
+
+### Running Class Reconciliation Standalone
+
+For batch processing or testing, you can run the class reconciliation script directly:
+
+```bash
+python class_reconciliation_enhanced.py
+```
+
+Edit the script to modify input/output paths:
+```python
+# In class_reconciliation_enhanced.py
+REFERENCE_LANDFIRE = "path/to/landfire_reference.tif"
+INPUT_ESRI = "path/to/input_esri.tif"
+OUTPUT_FBFM40 = "path/to/output_fbfm40.tif"
+```
+
+### Custom Class Mappings
+
+To use custom mappings, modify the `mapping_with_metadata` dictionary in `class_reconciliation_enhanced.py`:
+
+```python
+self.mapping_with_metadata = {
+    1: {'target': 98, 'confidence': 0.95, 'rationale': 'Water -> Open Water'},
+    2: {'target': 183, 'confidence': 0.55, 'rationale': 'Trees -> Moderate conifer litter'},
+    # Add your custom mappings here
+}
+```
+
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
@@ -496,22 +830,22 @@ curl -H "Authorization: Bearer your-jwt-token" \
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📄 License
+## License
 
 This project is proprietary software. All rights reserved.
 
-## 👥 Authors
+## Authors
 
 - OroraTech GmbH - Initial implementation
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - GDAL/OGR contributors for geospatial processing capabilities
 - FastAPI for high-performance Python web framework
 - Next.js team for excellent React framework
 - Leaflet for interactive map visualization
 
-## 📞 Support
+## Support
 
 For issues and questions:
 - Create an issue in the GitHub repository
@@ -539,4 +873,4 @@ npm install && npm run dev
 # http://localhost:3000
 ```
 
-Ready to process fuel maps! 🔥🗺️
+Ready to process fuel maps!
